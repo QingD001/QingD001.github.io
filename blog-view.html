@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>博客 | Jinlin Zheng</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-inner">
+      <a href="index.html" class="site-title">Jinlin Zheng</a>
+      <nav class="site-nav">
+        <a href="index.html">About</a>
+        <a href="research.html">Research</a>
+        <a href="blogs.html" class="active">Blogs</a>
+        <a href="projects.html">Projects</a>
+        <button class="theme-toggle" id="themeToggle" aria-label="切换主题">☀️</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="blog-article-wrap">
+    <a href="blogs.html" class="back-link">← 返回博客列表</a>
+    <div class="blog-iframe-wrap">
+      <iframe id="blogFrame" title="博客正文"></iframe>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var params = new URLSearchParams(location.search);
+      var file = params.get('file');
+      var frame = document.getElementById('blogFrame');
+      if (file && /^posts\/[a-zA-Z0-9_.-]+\.html$/i.test(file)) {
+        frame.src = 'blogs/' + file;
+      } else {
+        frame.srcdoc = '<p style="padding:24px;color:#6b7280;">未指定有效的博客文件（?file=posts/xxx.html）。</p>';
+      }
+    })();
+  </script>
+  <script src="js/main.js"></script>
+</body>
+</html>

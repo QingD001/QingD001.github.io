@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blogs | Jinlin Zheng</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-inner">
+      <a href="index.html" class="site-title">Jinlin Zheng</a>
+      <nav class="site-nav">
+        <a href="index.html">About</a>
+        <a href="research.html">Research</a>
+        <a href="blogs.html" class="active">Blogs</a>
+        <a href="projects.html">Projects</a>
+        <button class="theme-toggle" id="themeToggle" aria-label="切换主题">☀️</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <h1 class="section-title">📝 Blogs</h1>
+    <p style="color: var(--text-muted); margin-bottom: 24px;">将 HTML 文件放入 <code>blogs/posts/</code> 目录，并在下方脚本中的 <code>blogPosts</code> 数组里添加一条记录即可展示新博客。</p>
+
+    <!-- 博客列表由 JS 根据 blogPosts 渲染 -->
+    <ul class="blog-list" id="blogList"></ul>
+  </main>
+
+  <footer class="site-footer">
+    © 2026 Jinlin Zheng. 静态个人主页 + 博客。
+  </footer>
+
+  <script>
+    // ---------- 上传新博客步骤 ----------
+    // 1. 将你的 .html 文件放到 blogs/posts/ 目录下（例如 my-note.html）
+    // 2. 在下面数组中增加一条：{ title: '博客标题', date: '2026-03-16', file: 'posts/my-note.html' }
+    var blogPosts = [
+      { title: '示例博客：欢迎', date: '2026-03-16', file: 'posts/example.html' },
+      { title: '决策树系列模型详解', date: '2026-03-16', file: 'posts/Decision Tree.html' }
+    ];
+
+    var listEl = document.getElementById('blogList');
+    var base = 'blog-view.html?file=';
+    blogPosts.forEach(function (post) {
+      var li = document.createElement('li');
+      var a = document.createElement('a');
+      a.href = base + encodeURIComponent(post.file);
+      a.innerHTML = '<span class="blog-title">' + escapeHtml(post.title) + '</span><span class="blog-date">' + escapeHtml(post.date) + '</span>';
+      li.appendChild(a);
+      listEl.appendChild(li);
+    });
+    function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  </script>
+  <script src="js/main.js"></script>
+</body>
+</html>

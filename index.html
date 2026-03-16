@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jinlin Zheng | 个人主页</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-inner">
+      <a href="index.html" class="site-title">Jinlin Zheng</a>
+      <nav class="site-nav">
+        <a href="index.html" class="active">About</a>
+        <a href="research.html">Research</a>
+        <a href="blogs.html">Blogs</a>
+        <a href="projects.html">Projects</a>
+        <button class="theme-toggle" id="themeToggle" aria-label="切换主题">☀️</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- 个人资料卡片：参考图片布局 -->
+    <section class="profile-card">
+      <div class="profile-avatar-wrap">
+        <img src="assets/avatar.png" alt="头像" class="profile-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <div style="display:none; width:120px; height:120px; border-radius:50%; background: linear-gradient(135deg, var(--accent-blue-light), var(--accent-green)); border: 4px solid var(--accent-blue-light);" aria-hidden="true"></div>
+      </div>
+      <div class="profile-info">
+        <div class="profile-id">qingxuan001</div>
+        <h1 class="profile-name">Jinlin Zheng</h1>
+        <p class="profile-bio">照见大千，皆自性</p>
+        <ul class="profile-meta">
+          <li><span class="icon">👤</span> Pronouns: he/him</li>
+          <li><span class="icon">💼</span> Student at Renmin University of China</li>
+          <li><span class="icon">📍</span> Quanzhou, Fujian, China</li>
+          <li><span class="icon">📅</span> Joined 3 months ago · last seen in the past day</li>
+        </ul>
+      </div>
+      <div class="profile-decor" aria-hidden="true">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+      </div>
+    </section>
+
+    <h2 class="section-title">🙋 About Me</h2>
+    <div class="about-content">
+      <p>Hi there 👋，这里是郑金林（Jinlin Zheng），中国人民大学在读。</p>
+      <p>个人主页用于展示简介、研究、博客与项目。你可以在此编辑 About 内容，并在 Research / Blogs / Projects 中维护对应信息。</p>
+      <p>欢迎通过页面中的链接访问博客（支持上传 HTML 文件作为单篇博客展示）。</p>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    © 2026 Jinlin Zheng. 静态个人主页 + 博客。
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
