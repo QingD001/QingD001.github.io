@@ -340,9 +340,10 @@ body {
 
 .blog-iframe-wrap iframe {
   width: 100%;
-  height: 80vh;
+  height: auto;
   border: none;
   display: block;
+  overflow: hidden;
 }
 
 /* 博客页底部导航按钮 ========== */

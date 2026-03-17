@@ -45,6 +45,15 @@
         currentIndex = blogPosts.findIndex(function (p) { return p.file === file; });
         if (currentIndex !== -1) {
           frame.src = 'blogs/' + file;
+          frame.onload = function () {
+            try {
+              var doc = frame.contentDocument || frame.contentWindow.document;
+              var height = doc.documentElement.scrollHeight;
+              frame.style.height = height + 'px';
+            } catch (e) {
+              // 如果跨域或无法访问，则保持默认高度
+            }
+          };
         } else {
           frame.srcdoc = '<p style="padding:24px;color:#6b7280;">未找到对应的博客（' + file + '）。</p>';
         }
