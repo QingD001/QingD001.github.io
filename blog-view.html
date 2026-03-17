@@ -25,17 +25,60 @@
     <div class="blog-iframe-wrap">
       <iframe id="blogFrame" title="博客正文"></iframe>
     </div>
+
+    <div class="blog-nav"></div>
   </div>
 
   <script>
     (function () {
+      // 博客列表请在 blogs.html 中同步更新
+      var blogPosts = [
+        { title: 'Introduction to Decision Tree ', date: ' 2026-03-16', file: 'posts/Decision-Tree.html' }
+      ];
+
       var params = new URLSearchParams(location.search);
       var file = params.get('file');
       var frame = document.getElementById('blogFrame');
+
+      var currentIndex = -1;
       if (file && /^posts\/[a-zA-Z0-9_.-]+\.html$/i.test(file)) {
-        frame.src = 'blogs/' + file;
+        currentIndex = blogPosts.findIndex(function (p) { return p.file === file; });
+        if (currentIndex !== -1) {
+          frame.src = 'blogs/' + file;
+        } else {
+          frame.srcdoc = '<p style="padding:24px;color:#6b7280;">未找到对应的博客（' + file + '）。</p>';
+        }
       } else {
         frame.srcdoc = '<p style="padding:24px;color:#6b7280;">未指定有效的博客文件（?file=posts/xxx.html）。</p>';
+      }
+
+      var navWrap = document.querySelector('.blog-nav');
+
+      function makeNavButton(label, targetFile) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'nav-btn';
+        btn.textContent = label;
+        btn.addEventListener('click', function () {
+          location.href = 'blog-view.html?file=' + encodeURIComponent(targetFile);
+        });
+        return btn;
+      }
+
+      if (navWrap) {
+        if (currentIndex > 0) {
+          navWrap.appendChild(makeNavButton('← 上一篇', blogPosts[currentIndex - 1].file));
+        }
+        if (currentIndex >= 0 && currentIndex < blogPosts.length - 1) {
+          navWrap.appendChild(makeNavButton('下一篇 →', blogPosts[currentIndex + 1].file));
+        }
+
+        var listLink = document.createElement('a');
+        listLink.href = 'blogs.html';
+        listLink.className = 'nav-btn';
+        listLink.setAttribute('role', 'button');
+        listLink.textContent = '返回博客列表';
+        navWrap.appendChild(listLink);
       }
     })();
   </script>

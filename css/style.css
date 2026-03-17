@@ -331,10 +331,11 @@ body {
 .blog-iframe-wrap {
   width: 100%;
   min-height: 60vh;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: var(--card-radius);
+  /* 去掉特殊框样式，直接以内容为主 */
+  border: none;
+  border-radius: 0;
   overflow: hidden;
-  background: #fff;
+  background: transparent;
 }
 
 .blog-iframe-wrap iframe {
@@ -342,6 +343,48 @@ body {
   height: 80vh;
   border: none;
   display: block;
+}
+
+/* 博客页底部导航按钮 ========== */
+.blog-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.blog-nav .nav-btn {
+  padding: 10px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.blog-nav .nav-btn:hover:not(:disabled) {
+  background: rgba(102, 178, 255, 0.12);
+  border-color: rgba(102, 178, 255, 0.3);
+}
+
+.blog-nav .nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+body.dark .blog-nav .nav-btn {
+  background: rgba(31, 41, 55, 0.9);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+body.dark .blog-nav .nav-btn:hover:not(:disabled) {
+  background: rgba(96, 165, 250, 0.18);
 }
 
 /* ========== 页脚 ========== */
