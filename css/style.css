@@ -28,6 +28,24 @@ body {
   line-height: 1.6;
 }
 
+/* ========== 背景动态几何（Canvas） ========== */
+.bg-geometry {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 1;
+}
+
+/* 确保页面内容在背景之上 */
+.site-header,
+.main,
+.site-footer,
+.blog-article-wrap {
+  position: relative;
+  z-index: 1;
+}
+
 /* ========== 顶部导航 ========== */
 .site-header {
   position: sticky;
