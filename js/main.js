@@ -84,7 +84,13 @@
           ox: rand(-spread, spread),
           oy: rand(-spread, spread),
           jx: rand(-0.15, 0.15),
-          jy: rand(-0.15, 0.15)
+          jy: rand(-0.15, 0.15),
+          // 形变参数：每个点有独立相位/频率/幅度
+          ph1: rand(0, Math.PI * 2),
+          ph2: rand(0, Math.PI * 2),
+          f1: rand(0.5, 1.2),
+          f2: rand(0.5, 1.2),
+          amp: rand(2.5, 6.5)
         });
       }
 
@@ -121,7 +127,8 @@
         points: points,
         edges: edges,
         tetherIndex: tetherIndex,
-        seed: rand(0, 1000)
+        seed: rand(0, 1000),
+        rotSeed: rand(0, Math.PI * 2)
       };
     }
 
@@ -184,6 +191,25 @@
         if (geo.cy < -40) geo.cy = h + 40;
         if (geo.cy > h + 40) geo.cy = -40;
 
+        // 变形：整体“呼吸”缩放 + 轻微旋转（让几何图形在漂浮时发生形变）
+        var tsec = now / 1000;
+        var scale = 1 + 0.055 * Math.sin(tsec * 0.9 + geo.seed);
+        var rot = 0.14 * Math.sin(tsec * 0.7 + geo.rotSeed);
+        var cosr = Math.cos(rot);
+        var sinr = Math.sin(rot);
+
+        function pointPos(p) {
+          // 点位周期形变（不规则但稳定）
+          var mx = Math.sin(tsec * p.f1 + p.ph1) * p.amp;
+          var my = Math.cos(tsec * p.f2 + p.ph2) * (p.amp * 0.85);
+          var lx = (p.ox + p.jx + mx) * scale;
+          var ly = (p.oy + p.jy + my) * scale;
+          return {
+            x: geo.cx + (lx * cosr - ly * sinr),
+            y: geo.cy + (lx * sinr + ly * cosr)
+          };
+        }
+
         // 绘制线段网络（几何图形）
         ctx.lineWidth = 1;
         ctx.strokeStyle = c.stroke;
@@ -201,21 +227,20 @@
           p0.jx *= 0.92; p0.jy *= 0.92;
           p1.jx *= 0.92; p1.jy *= 0.92;
 
-          var x0 = geo.cx + p0.ox + p0.jx;
-          var y0 = geo.cy + p0.oy + p0.jy;
-          var x1 = geo.cx + p1.ox + p1.jx;
-          var y1 = geo.cy + p1.oy + p1.jy;
+          var pp0 = pointPos(p0);
+          var pp1 = pointPos(p1);
 
-          ctx.moveTo(x0, y0);
-          ctx.lineTo(x1, y1);
+          ctx.moveTo(pp0.x, pp0.y);
+          ctx.lineTo(pp1.x, pp1.y);
         }
         ctx.stroke();
 
         // 每个几何图形：有且仅有一条“端点-鼠标”连接线
         if (mouse.active) {
           var tp = geo.points[geo.tetherIndex];
-          var tx = geo.cx + tp.ox + tp.jx;
-          var ty = geo.cy + tp.oy + tp.jy;
+          var tpp = pointPos(tp);
+          var tx = tpp.x;
+          var ty = tpp.y;
 
           // 仅在一定距离内明显显示，远处淡化
           var mdx = mouse.x - tx;
