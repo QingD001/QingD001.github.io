@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Games | Jinlin Zheng</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="favicon.png" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-inner">
+      <a href="index.html" class="site-title">Jinlin Zheng</a>
+      <nav class="site-nav">
+        <a href="index.html">About</a>
+        <a href="research.html">Research</a>
+        <a href="blogs.html">Blogs</a>
+        <a href="games.html" class="active">Games</a>
+        <a href="projects.html">Projects</a>
+        <button class="theme-toggle" id="themeToggle" aria-label="切换主题">☀️</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <h1 class="section-title">Games</h1>
+    <p class="muted">极简冷色系小游戏合集：2048 / 贪吃蛇 / 俄罗斯方块。支持键盘操作；移动端支持触控滑动（2048/贪吃蛇）。</p>
+
+    <section class="game-cards" aria-label="游戏列表">
+      <a class="game-card" href="#g2048" data-game="2048">
+        <div class="game-card-title">2048</div>
+        <div class="game-card-sub">方向键 / WASD · 合并数字</div>
+      </a>
+      <a class="game-card" href="#gsnake" data-game="snake">
+        <div class="game-card-title">贪吃蛇</div>
+        <div class="game-card-sub">方向键 / WASD · 吃到食物变长</div>
+      </a>
+      <a class="game-card" href="#gtetris" data-game="tetris">
+        <div class="game-card-title">俄罗斯方块</div>
+        <div class="game-card-sub">←→ 移动 · ↑ 旋转 · ↓ 加速 · Space 硬降</div>
+      </a>
+    </section>
+
+    <section id="g2048" class="game-panel">
+      <div class="game-panel-head">
+        <h2 class="game-panel-title">2048</h2>
+        <div class="game-panel-actions">
+          <div class="game-score" aria-label="2048 分数">Score: <span id="score2048">0</span></div>
+          <button class="btn" id="reset2048" type="button">重开</button>
+        </div>
+      </div>
+      <div class="game-2048-wrap">
+        <div class="game-2048-grid" id="grid2048" role="application" aria-label="2048 棋盘"></div>
+      </div>
+      <div class="muted small">提示：在棋盘区域滑动也可操作（移动端）。</div>
+    </section>
+
+    <section id="gsnake" class="game-panel">
+      <div class="game-panel-head">
+        <h2 class="game-panel-title">贪吃蛇</h2>
+        <div class="game-panel-actions">
+          <div class="game-score" aria-label="贪吃蛇 分数">Score: <span id="scoreSnake">0</span></div>
+          <button class="btn" id="resetSnake" type="button">重开</button>
+        </div>
+      </div>
+      <div class="game-canvas-wrap">
+        <canvas id="snakeCanvas" width="360" height="360" aria-label="贪吃蛇画布"></canvas>
+      </div>
+      <div class="muted small">提示：点击画布后可用方向键；移动端在画布上滑动控制方向。</div>
+    </section>
+
+    <section id="gtetris" class="game-panel">
+      <div class="game-panel-head">
+        <h2 class="game-panel-title">俄罗斯方块</h2>
+        <div class="game-panel-actions">
+          <div class="game-score" aria-label="俄罗斯方块 分数">Score: <span id="scoreTetris">0</span></div>
+          <button class="btn" id="resetTetris" type="button">重开</button>
+        </div>
+      </div>
+      <div class="game-tetris-layout">
+        <div class="game-canvas-wrap">
+          <canvas id="tetrisCanvas" width="300" height="480" aria-label="俄罗斯方块画布"></canvas>
+        </div>
+        <div class="game-side">
+          <div class="side-card">
+            <div class="side-title">操作</div>
+            <div class="side-text">← →：左右移动</div>
+            <div class="side-text">↑：旋转</div>
+            <div class="side-text">↓：加速下落</div>
+            <div class="side-text">Space：硬降</div>
+          </div>
+          <div class="side-card">
+            <div class="side-title">规则</div>
+            <div class="side-text">消行得分，越多行越高分。</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    © 2026 Jinlin Zheng. My Blog。
+  </footer>
+
+  <script src="js/games.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

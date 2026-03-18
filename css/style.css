@@ -247,6 +247,195 @@ body {
   color: var(--text-muted);
 }
 
+/* ========== Games 页面（极简冷色系） ========== */
+.muted {
+  color: var(--text-muted);
+  margin: 0 0 18px 0;
+}
+.small { font-size: 0.9rem; }
+
+.btn {
+  padding: 10px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.btn:hover {
+  background: rgba(102, 178, 255, 0.12);
+  border-color: rgba(102, 178, 255, 0.35);
+}
+body.dark .btn {
+  background: rgba(31, 41, 55, 0.9);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.game-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 10px 0 30px;
+}
+@media (max-width: 860px) {
+  .game-cards { grid-template-columns: 1fr; }
+}
+
+.game-card {
+  display: block;
+  padding: 18px 18px 16px;
+  border-radius: var(--card-radius);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: linear-gradient(135deg, rgba(102, 178, 255, 0.12), rgba(119, 221, 119, 0.08));
+  text-decoration: none;
+  color: var(--text);
+  box-shadow: var(--shadow);
+  transition: transform 0.15s ease, border-color 0.2s, box-shadow 0.2s;
+}
+.game-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(102, 178, 255, 0.3);
+  box-shadow: 0 10px 30px rgba(102, 178, 255, 0.15);
+}
+.game-card-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+}
+.game-card-sub {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+body.dark .game-card {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.16), rgba(52, 211, 153, 0.08));
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.game-panel {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow);
+  padding: 18px 18px 16px;
+  margin: 18px 0;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(6px);
+}
+body.dark .game-panel {
+  background: rgba(31, 41, 55, 0.78);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.game-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.game-panel-title {
+  margin: 0;
+  font-size: 1.2rem;
+}
+.game-panel-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+.game-score {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* 2048 */
+.game-2048-wrap {
+  display: grid;
+  place-items: center;
+  padding: 8px 0 12px;
+}
+.game-2048-grid {
+  width: min(420px, 92vw);
+  aspect-ratio: 1 / 1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(102, 178, 255, 0.08);
+}
+body.dark .game-2048-grid {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(96, 165, 250, 0.12);
+}
+.tile {
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  font-weight: 700;
+  font-size: clamp(18px, 3.8vw, 34px);
+  color: #0f172a;
+  user-select: none;
+}
+body.dark .tile {
+  background: rgba(17, 24, 39, 0.6);
+  border-color: rgba(255, 255, 255, 0.10);
+  color: #e5e7eb;
+}
+
+/* Canvas games */
+.game-canvas-wrap {
+  display: grid;
+  place-items: center;
+  padding: 8px 0 12px;
+}
+.game-canvas-wrap canvas {
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(102, 178, 255, 0.06);
+  width: min(480px, 92vw);
+  height: auto;
+}
+body.dark .game-canvas-wrap canvas {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(96, 165, 250, 0.10);
+}
+
+.game-tetris-layout {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 860px) {
+  .game-tetris-layout { grid-template-columns: 1fr; }
+}
+.game-side {
+  display: grid;
+  gap: 12px;
+}
+.side-card {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 14px;
+  padding: 14px 14px 12px;
+  background: rgba(255, 255, 255, 0.6);
+}
+body.dark .side-card {
+  background: rgba(17, 24, 39, 0.55);
+  border-color: rgba(255, 255, 255, 0.10);
+}
+.side-title {
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.side-text {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  margin-bottom: 6px;
+}
 /* ========== Research / Projects 列表（参考站卡片式） ========== */
 .item-list {
   list-style: none;
