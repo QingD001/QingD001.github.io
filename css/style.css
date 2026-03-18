@@ -385,6 +385,8 @@ body.dark .tile-bg {
 /* 2048 可移动数字块 */
 .tile-move {
   position: absolute;
+  left: 0;
+  top: 0;
   display: grid;
   place-items: center;
   border-radius: 12px;
