@@ -262,6 +262,12 @@ body {
   margin-bottom: 8px;
 }
 
+.item-card .meta .role {
+  font-weight: 600;
+  color: var(--text);
+  margin-right: 4px;
+}
+
 .item-card .desc {
   font-size: 0.95rem;
   color: var(--text-muted);
