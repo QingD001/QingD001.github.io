@@ -303,11 +303,14 @@ body {
 }
 
 .blog-list .blog-title {
+  display: inline-block;
   font-weight: 600;
   margin: 0 0 6px 0;
 }
 
 .blog-list .blog-date {
+  display: inline-block;
+  margin-left: 4ch;
   font-size: 0.85rem;
   color: var(--text-muted);
 }
