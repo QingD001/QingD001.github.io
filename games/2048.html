@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2048 | Games</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="icon" href="../favicon.png" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-inner">
+      <a href="../index.html" class="site-title">Jinlin Zheng</a>
+      <nav class="site-nav">
+        <a href="../index.html">About</a>
+        <a href="../research.html">Research</a>
+        <a href="../blogs.html">Blogs</a>
+        <a href="index.html" class="active">Games</a>
+        <a href="../projects.html">Projects</a>
+        <button class="theme-toggle" id="themeToggle" aria-label="切换主题">☀️</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <a class="back-link" href="index.html">← 返回 Games</a>
+
+    <section class="game-panel">
+      <div class="game-panel-head">
+        <h1 class="game-panel-title">2048</h1>
+        <div class="game-panel-actions">
+          <div class="game-score" aria-label="2048 分数">Score: <span id="score2048">0</span></div>
+          <button class="btn" id="reset2048" type="button">重开</button>
+        </div>
+      </div>
+      <div class="game-2048-wrap">
+        <div class="game-2048-grid" id="grid2048" role="application" aria-label="2048 棋盘"></div>
+      </div>
+      <div class="muted small">方向键 / WASD 或在棋盘上滑动。</div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    © 2026 Jinlin Zheng. My Blog。
+  </footer>
+
+  <script src="games.js"></script>
+  <script src="../js/main.js"></script>
+</body>
+</html>

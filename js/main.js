@@ -13,12 +13,31 @@
     });
   }
 
-  // 当前页导航高亮
-  var path = (location.pathname || '').replace(/^\//, '') || 'index.html';
-  if (path === '') path = 'index.html';
+  // 当前页导航高亮（使用 URL 解析，兼容子目录如 games/）
+  var currentPathname = '';
+  try {
+    currentPathname = new URL(location.href).pathname.replace(/\/+$/, '');
+  } catch (e) {
+    currentPathname = (location.pathname || '').replace(/\/+$/, '');
+  }
+  if (currentPathname === '' || currentPathname === '/') currentPathname = '/index.html';
+
   document.querySelectorAll('.site-nav a[href]').forEach(function (a) {
-    var href = a.getAttribute('href');
-    if (href === path || (path === 'index.html' && href === 'index.html')) a.classList.add('active');
+    var rawHref = a.getAttribute('href') || '';
+    var targetPathname = '';
+    try {
+      targetPathname = new URL(rawHref, location.href).pathname.replace(/\/+$/, '');
+    } catch (e2) {
+      targetPathname = rawHref;
+    }
+
+    var isActive = (targetPathname === currentPathname);
+    // 进入 games 子页面时，让 Games（games/index.html）保持高亮
+    if (!isActive && currentPathname.indexOf('/games/') === 0) {
+      if (targetPathname.endsWith('/games/index.html')) isActive = true;
+    }
+
+    if (isActive) a.classList.add('active');
     else a.classList.remove('active');
   });
 
