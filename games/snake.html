@@ -33,8 +33,15 @@
           <button class="btn" id="resetSnake" type="button">重开</button>
         </div>
       </div>
-      <div class="game-canvas-wrap">
+      <div class="game-canvas-wrap game-canvas-wrap--overlay">
         <canvas id="snakeCanvas" width="360" height="360" aria-label="贪吃蛇画布"></canvas>
+        <div class="canvas-overlay canvas-overlay--br" aria-label="速度选择">
+          <div class="segmented" id="snakeSpeed" role="group" aria-label="速度">
+            <button class="segmented-btn" type="button" data-speed="1" aria-pressed="false">1</button>
+            <button class="segmented-btn is-active" type="button" data-speed="2" aria-pressed="true">2</button>
+            <button class="segmented-btn" type="button" data-speed="3" aria-pressed="false">3</button>
+          </div>
+        </div>
       </div>
       <div class="muted small">点击画布后用方向键 / WASD；移动端在画布上滑动。</div>
     </section>

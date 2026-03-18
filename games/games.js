@@ -32,133 +32,255 @@
     var resetBtn = document.getElementById('reset2048');
 
     var size = 4;
-    var grid = [];
     var score = 0;
+    var tiles = new Map(); // id -> { id, v, r, c }
+    var board = []; // [r][c] -> tileId | 0
+    var nextId = 1;
+    var animating = false;
 
-    function emptyGrid() {
-      grid = [];
+    function emptyBoard() {
+      board = [];
       for (var r = 0; r < size; r++) {
         var row = [];
         for (var c = 0; c < size; c++) row.push(0);
-        grid.push(row);
+        board.push(row);
       }
     }
 
-    function spawn() {
+    function spawn(isFirst) {
       var empties = [];
-      for (var r = 0; r < size; r++) for (var c = 0; c < size; c++) if (grid[r][c] === 0) empties.push([r, c]);
+      for (var r = 0; r < size; r++) for (var c = 0; c < size; c++) if (board[r][c] === 0) empties.push([r, c]);
       if (!empties.length) return false;
       var pick = empties[randInt(empties.length)];
-      grid[pick[0]][pick[1]] = Math.random() < 0.9 ? 2 : 4;
+      var v = Math.random() < 0.9 ? 2 : 4;
+      var id = nextId++;
+      tiles.set(id, { id: id, v: v, r: pick[0], c: pick[1] });
+      board[pick[0]][pick[1]] = id;
+      markTileClass(id, isFirst ? '' : 'is-new');
       return true;
     }
 
     function canMove() {
-      for (var r = 0; r < size; r++) for (var c = 0; c < size; c++) if (grid[r][c] === 0) return true;
+      for (var r = 0; r < size; r++) for (var c = 0; c < size; c++) if (board[r][c] === 0) return true;
       for (var r2 = 0; r2 < size; r2++) for (var c2 = 0; c2 < size; c2++) {
-        var v = grid[r2][c2];
-        if (r2 + 1 < size && grid[r2 + 1][c2] === v) return true;
-        if (c2 + 1 < size && grid[r2][c2 + 1] === v) return true;
+        var id = board[r2][c2];
+        if (!id) continue;
+        var v = tiles.get(id).v;
+        if (r2 + 1 < size) {
+          var idD = board[r2 + 1][c2];
+          if (idD && tiles.get(idD).v === v) return true;
+        }
+        if (c2 + 1 < size) {
+          var idR = board[r2][c2 + 1];
+          if (idR && tiles.get(idR).v === v) return true;
+        }
       }
       return false;
     }
 
-    function slideRowLeft(row) {
-      var arr = row.filter(function (x) { return x !== 0; });
-      var merged = [];
-      for (var i = 0; i < arr.length; i++) {
-        if (i + 1 < arr.length && arr[i] === arr[i + 1] && !merged[i]) {
-          arr[i] = arr[i] * 2;
-          score += arr[i];
-          arr.splice(i + 1, 1);
-          merged[i] = true;
-        }
-      }
-      while (arr.length < size) arr.push(0);
-      return arr;
-    }
-
-    function rotateRight(mat) {
-      var res = [];
-      for (var c = 0; c < size; c++) {
-        var row = [];
-        for (var r = size - 1; r >= 0; r--) row.push(mat[r][c]);
-        res.push(row);
-      }
-      return res;
-    }
-    function rotateLeft(mat) {
-      var res = [];
-      for (var c = size - 1; c >= 0; c--) {
-        var row = [];
-        for (var r = 0; r < size; r++) row.push(mat[r][c]);
-        res.push(row);
-      }
-      return res;
-    }
-
-    function move(dir) {
-      var before = JSON.stringify(grid);
-      if (dir === 'left') {
-        for (var r = 0; r < size; r++) grid[r] = slideRowLeft(grid[r]);
-      } else if (dir === 'right') {
-        for (var r2 = 0; r2 < size; r2++) {
-          var rev = grid[r2].slice().reverse();
-          rev = slideRowLeft(rev);
-          grid[r2] = rev.reverse();
-        }
-      } else if (dir === 'up') {
-        grid = rotateLeft(grid);
-        for (var r3 = 0; r3 < size; r3++) grid[r3] = slideRowLeft(grid[r3]);
-        grid = rotateRight(grid);
-      } else if (dir === 'down') {
-        grid = rotateLeft(grid);
-        for (var r4 = 0; r4 < size; r4++) {
-          var rev2 = grid[r4].slice().reverse();
-          rev2 = slideRowLeft(rev2);
-          grid[r4] = rev2.reverse();
-        }
-        grid = rotateRight(grid);
-      }
-      var after = JSON.stringify(grid);
-      if (before !== after) {
-        spawn();
-        render();
-        if (!canMove()) gridEl.setAttribute('data-over', '1');
-        else gridEl.removeAttribute('data-over');
-      }
-    }
-
     function tileColor(v) {
-      if (v === 0) return 'rgba(255,255,255,0.35)';
       var p = Math.log2(v) / 11;
       p = clamp(p, 0, 1);
-      var a = 0.18 + p * 0.28;
+      var a = 0.20 + p * 0.32;
       return 'rgba(96,165,250,' + a.toFixed(3) + ')';
     }
 
-    function render() {
-      if (scoreEl) scoreEl.textContent = String(score);
-      gridEl.innerHTML = '';
+    // 计算单元格几何（用于 transform）
+    function measure() {
+      var rect = gridEl.getBoundingClientRect();
+      var styles = getComputedStyle(gridEl);
+      var pad = parseFloat(styles.paddingLeft) || 12;
+      var gap = parseFloat(styles.gap) || 10;
+      var inner = rect.width - pad * 2;
+      var cell = (inner - gap * (size - 1)) / size;
+      return { pad: pad, gap: gap, cell: cell };
+    }
+    function cellXY(r, c, m) {
+      return {
+        x: m.pad + c * (m.cell + m.gap),
+        y: m.pad + r * (m.cell + m.gap),
+        s: m.cell
+      };
+    }
+
+    // 背景 16 格（固定不动）
+    function ensureBackground() {
+      if (gridEl.getAttribute('data-bg') === '1') return;
+      gridEl.setAttribute('data-bg', '1');
+      var m = measure();
       for (var r = 0; r < size; r++) {
         for (var c = 0; c < size; c++) {
-          var v = grid[r][c];
-          var d = document.createElement('div');
-          d.className = 'tile';
-          d.textContent = v ? String(v) : '';
-          d.style.background = tileColor(v);
-          gridEl.appendChild(d);
+          var bg = document.createElement('div');
+          bg.className = 'tile-bg';
+          var p = cellXY(r, c, m);
+          bg.style.left = p.x + 'px';
+          bg.style.top = p.y + 'px';
+          bg.style.width = p.s + 'px';
+          bg.style.height = p.s + 'px';
+          gridEl.appendChild(bg);
         }
       }
+    }
+
+    // 可移动 tile DOM
+    var domById = new Map();
+    var pendingClass = new Map(); // id -> className
+    function markTileClass(id, cls) {
+      if (!cls) return;
+      pendingClass.set(id, cls);
+    }
+
+    function applyTileStyles(el, t, m) {
+      var p = cellXY(t.r, t.c, m);
+      el.style.width = p.s + 'px';
+      el.style.height = p.s + 'px';
+      el.style.setProperty('--tx', p.x + 'px');
+      el.style.setProperty('--ty', p.y + 'px');
+      el.style.transform = 'translate(' + p.x + 'px,' + p.y + 'px)';
+    }
+
+    function renderTiles() {
+      ensureBackground();
+      var m = measure();
+      // 更新/创建 DOM
+      tiles.forEach(function (t, id) {
+        var el = domById.get(id);
+        if (!el) {
+          el = document.createElement('div');
+          el.className = 'tile-move';
+          el.setAttribute('data-id', String(id));
+          gridEl.appendChild(el);
+          domById.set(id, el);
+        }
+        el.textContent = String(t.v);
+        el.style.background = tileColor(t.v);
+        applyTileStyles(el, t, m);
+
+        var cls = pendingClass.get(id);
+        if (cls) {
+          el.classList.add(cls);
+          // 下一帧移除（避免无限重复动画）
+          requestAnimationFrame(function () {
+            el.classList.remove(cls);
+          });
+          pendingClass.delete(id);
+        }
+      });
+      // 移除不存在的 tile
+      domById.forEach(function (el, id) {
+        if (!tiles.has(id)) {
+          el.remove();
+          domById.delete(id);
+        }
+      });
+
+      if (scoreEl) scoreEl.textContent = String(score);
+    }
+
+    function move(dir) {
+      if (animating) return;
+      var moved = false;
+      var mergedTo = new Set(); // cellKey "r,c" merged already this move
+      var consumed = new Set(); // tileId removed due to merge
+
+      function stepOrder() {
+        var rStart = 0, rEnd = size, rStep = 1;
+        var cStart = 0, cEnd = size, cStep = 1;
+        if (dir === 'right') { cStart = size - 1; cEnd = -1; cStep = -1; }
+        if (dir === 'down') { rStart = size - 1; rEnd = -1; rStep = -1; }
+        return { rStart: rStart, rEnd: rEnd, rStep: rStep, cStart: cStart, cEnd: cEnd, cStep: cStep };
+      }
+
+      function delta() {
+        if (dir === 'left') return { dr: 0, dc: -1 };
+        if (dir === 'right') return { dr: 0, dc: 1 };
+        if (dir === 'up') return { dr: -1, dc: 0 };
+        return { dr: 1, dc: 0 }; // down
+      }
+
+      var ord = stepOrder();
+      var d = delta();
+
+      // 逐 tile 推进到最远
+      for (var r = ord.rStart; r !== ord.rEnd; r += ord.rStep) {
+        for (var c = ord.cStart; c !== ord.cEnd; c += ord.cStep) {
+          var id = board[r][c];
+          if (!id) continue;
+          if (consumed.has(id)) continue;
+          var t = tiles.get(id);
+
+          var nr = r;
+          var nc = c;
+          while (true) {
+            var tr = nr + d.dr;
+            var tc = nc + d.dc;
+            if (tr < 0 || tc < 0 || tr >= size || tc >= size) break;
+            var nextId = board[tr][tc];
+            if (!nextId) {
+              nr = tr; nc = tc;
+              continue;
+            }
+            var tv = tiles.get(nextId).v;
+            var key = tr + ',' + tc;
+            if (tv === t.v && !mergedTo.has(key)) {
+              // merge into nextId
+              mergedTo.add(key);
+              score += t.v * 2;
+              tiles.get(nextId).v = t.v * 2;
+              markTileClass(nextId, 'is-merged');
+              consumed.add(id);
+              board[r][c] = 0;
+              moved = true;
+              break;
+            }
+            break;
+          }
+
+          if (!consumed.has(id) && (nr !== r || nc !== c)) {
+            board[r][c] = 0;
+            board[nr][nc] = id;
+            t.r = nr; t.c = nc;
+            moved = true;
+          }
+        }
+      }
+
+      // 删除被合并吞掉的 tile
+      if (consumed.size) {
+        consumed.forEach(function (id) {
+          tiles.delete(id);
+          // dom 清理在 renderTiles 做
+        });
+      }
+
+      if (!moved) return;
+
+      animating = true;
+      renderTiles(); // 触发 transform 过渡
+
+      window.setTimeout(function () {
+        spawn(false);
+        renderTiles();
+        if (!canMove()) gridEl.setAttribute('data-over', '1');
+        else gridEl.removeAttribute('data-over');
+        animating = false;
+      }, 130);
     }
 
     function reset() {
       score = 0;
-      emptyGrid();
-      spawn();
-      spawn();
+      tiles.clear();
+      domById.forEach(function (el) { el.remove(); });
+      domById.clear();
+      pendingClass.clear();
+      emptyBoard();
+      // 先清背景，避免尺寸变化后错位
+      gridEl.innerHTML = '';
+      gridEl.removeAttribute('data-bg');
+      spawn(true);
+      spawn(true);
       gridEl.removeAttribute('data-over');
-      render();
+      renderTiles();
     }
 
     if (resetBtn) resetBtn.addEventListener('click', reset);
@@ -182,6 +304,8 @@
     var ctx = canvas.getContext('2d');
     var scoreEl = document.getElementById('scoreSnake');
     var resetBtn = document.getElementById('resetSnake');
+    var speedWrap = document.getElementById('snakeSpeed');
+    var speedLevel = 2; // 默认 2 档
 
     var gridSize = 18;
     var cells = 18;
@@ -200,6 +324,12 @@
     window.addEventListener('resize', fitCanvas, { passive: true });
 
     var snake, dir, nextDir, food, score, alive, lastMove;
+    function speedMs() {
+      // 1 慢 / 2 中 / 3 快
+      if (speedLevel === 1) return 170;
+      if (speedLevel === 3) return 85;
+      return 120;
+    }
     function reset() {
       snake = [{ x: 8, y: 9 }, { x: 7, y: 9 }, { x: 6, y: 9 }];
       dir = { x: 1, y: 0 };
@@ -230,7 +360,7 @@
     function step(now) {
       requestAnimationFrame(step);
       if (!alive) return;
-      var speed = 120;
+      var speed = speedMs();
       if (now - lastMove < speed) return;
       lastMove = now;
       dir = nextDir;
@@ -286,6 +416,25 @@
     }
 
     if (resetBtn) resetBtn.addEventListener('click', reset);
+    if (speedWrap) {
+      speedWrap.addEventListener('click', function (e) {
+        var t = e.target;
+        if (!t || !t.getAttribute) return;
+        var v = t.getAttribute('data-speed');
+        if (!v) return;
+        var n = parseInt(v, 10);
+        if (n !== 1 && n !== 2 && n !== 3) return;
+        speedLevel = n;
+        // 更新样式与 aria-pressed
+        speedWrap.querySelectorAll('[data-speed]').forEach(function (btn) {
+          var on = btn.getAttribute('data-speed') === String(speedLevel);
+          btn.classList.toggle('is-active', on);
+          btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
+        // 让切换速度立即生效（下一步不必等太久）
+        lastMove = 0;
+      });
+    }
     window.addEventListener('keydown', function (e) {
       if (!document.getElementById('snakeCanvas')) return;
       var k = e.key;
