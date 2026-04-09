@@ -36,7 +36,8 @@
       var blogPosts = [
         { title: 'Introduction to Decision Tree ', date: ' 2026-03-16', file: 'posts/Decision-Tree.html' },
         { title: "Introduction to Byte Latent Transformer" , date:'2026-03-18' ,file: "posts/Introduction-to-BLT.html" },
-        { title: "Leetcode Weekly Contest 494" , date:'2026-03-22' ,file: "posts/Leetcode-SingleRound494.html" }
+        { title: "Leetcode Weekly Contest 494" , date:'2026-03-22' ,file: "posts/Leetcode-SingleRound494.html" },
+        { title: "[CSPro 23]收集卡牌·题解" , date:'2026-04-09' ,file: "posts/CSPro23T4.html" }
       ];
 
       var params = new URLSearchParams(location.search);
@@ -53,6 +54,10 @@
               var doc = frame.contentDocument || frame.contentWindow.document;
               var height = doc.documentElement.scrollHeight;
               frame.style.height = height + 'px';
+              
+              // 确保iframe内部也不显示滚动条
+              doc.body.style.overflow = 'hidden';
+              doc.documentElement.style.overflow = 'hidden';
             } catch (e) {
               // 如果跨域或无法访问，则保持默认高度
             }

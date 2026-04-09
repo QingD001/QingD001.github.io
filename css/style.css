@@ -642,6 +642,14 @@ body.dark .side-card {
   border: none;
   display: block;
   overflow: hidden;
+  /* 隐藏滚动条 */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+/* 隐藏Webkit浏览器的滚动条 */
+.blog-iframe-wrap iframe::-webkit-scrollbar {
+  display: none;
 }
 
 /* 博客页底部导航按钮 ========== */
