@@ -34,10 +34,17 @@
     (function () {
       // 博客列表请在 blogs.html 中同步更新
       var blogPosts = [
-        { title: 'Introduction to Decision Tree ', date: ' 2026-03-16', file: 'posts/Decision-Tree.html' },
-        { title: "Introduction to Byte Latent Transformer" , date:'2026-03-18' ,file: "posts/Introduction-to-BLT.html" },
-        { title: "Leetcode Weekly Contest 494" , date:'2026-03-22' ,file: "posts/Leetcode-SingleRound494.html" },
-        { title: "[CSPro 23]收集卡牌·题解" , date:'2026-04-09' ,file: "posts/CSPro23T4.html" }
+        { title: 'Introduction to Decision Tree ', date: '26-03-16', file: 'posts/Decision-Tree.html' },
+        { title: "Introduction to Byte Latent Transformer" , date:'26-03-18' ,file: "posts/Introduction-to-BLT.html" },
+        { title: "Leetcode Weekly Contest 494" , date:'26-03-22' ,file: "posts/Leetcode-SingleRound494.html" },
+        { title: "[CSPro 23]收集卡牌·题解" , date:'26-04-09' ,file: "posts/CSPro23T4.html" },
+        { title: "近期 dp 题总结" , date:'26-04-20' ,file: "posts/20260420近期dp题总结.html" },
+        { title: "部分搜索与数学题心得" , date:'26-04-21' ,file: "posts/20260421 部分搜索与数学题心得.html" },
+        { title: "Educational Codeforces Round 189 (Div. 2)" , date:'26-04-21' ,file: "posts/20260421Educational Codeforces Round 189 (Div. 2).html" },
+        { title: "LLM成熟框架讲解" , date:'26-05-08' ,file: "posts/LLM成熟框架讲解.html" },
+        { title: "CF Round 1098 Div 2" , date:'26-05-17' ,file: "posts/CF1098.html" },
+        { title: "生成函数" , date:'26-05-19' ,file: "posts/生成函数.html" },
+        { title: "集合论" , date:'26-05-19' ,file: "posts/集合论.html" }
       ];
 
       var params = new URLSearchParams(location.search);
@@ -45,7 +52,7 @@
       var frame = document.getElementById('blogFrame');
 
       var currentIndex = -1;
-      if (file && /^posts\/[a-zA-Z0-9_.-]+\.html$/i.test(file)) {
+      if (file && /^posts\/[^/]+\.html$/i.test(file)) {
         currentIndex = blogPosts.findIndex(function (p) { return p.file === file; });
         if (currentIndex !== -1) {
           frame.src = 'blogs/' + file;
