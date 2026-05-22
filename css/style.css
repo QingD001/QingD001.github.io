@@ -8,6 +8,7 @@
   --accent-green: #77dd77;
   --accent-yellow: #ffd966;
   --card-radius: 16px;
+  --border: rgba(0, 0, 0, 0.12);
   --shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
   --nav-height: 56px;
 }
@@ -245,6 +246,38 @@ body {
 .about-content p {
   margin: 0 0 1em 0;
   color: var(--text-muted);
+}
+
+.social-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.social-link:hover {
+  color: var(--accent-blue-light);
+  border-color: var(--accent-blue-light);
+  background: rgba(100, 149, 237, 0.06);
+}
+
+.social-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
 /* ========== Games 页面（极简冷色系） ========== */
@@ -714,6 +747,7 @@ body.dark {
   --accent-blue-light: #3b82f6;
   --accent-green: #34d399;
   --accent-yellow: #fbbf24;
+  --border: rgba(255, 255, 255, 0.15);
   --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
