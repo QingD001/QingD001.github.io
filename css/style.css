@@ -29,13 +29,82 @@ body {
   line-height: 1.6;
 }
 
-/* ========== 背景动态几何（Canvas） ========== */
+/* ========== 背景动态几何（Canvas，黑夜模式） ========== */
 .bg-geometry {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
   opacity: 1;
+}
+
+/* 主页白天模式改用诗句层，隐藏几何背景 */
+body.page-home:not(.dark) .bg-geometry {
+  display: none;
+}
+
+/* ========== 主页白天：《红楼梦》诗句浮影 ========== */
+.bg-poetry {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  contain: layout style paint;
+}
+
+body.dark .bg-poetry {
+  display: none;
+}
+
+.bg-poetry-line {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-family: "Kaiti SC", "STKaiti", "KaiTi", "楷体", "FangSong", "STFangsong", serif;
+  font-size: var(--poetry-size, 22px);
+  color: #5a4838;
+  line-height: 1.22;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.bg-poetry-char {
+  display: block;
+  width: 1.2em;
+  text-align: center;
+}
+
+/* 标点单独占一格，避免竖排里出现横躺碎片 */
+.bg-poetry-char.is-punct {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.2em;
+  height: 0.82em;
+  font-size: 0.66em;
+  line-height: 1;
+}
+
+@media (max-width: 720px) {
+  .bg-poetry-line {
+    font-size: var(--poetry-size, 15px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-poetry-line {
+    will-change: auto;
+  }
 }
 
 /* 确保页面内容在背景之上 */
