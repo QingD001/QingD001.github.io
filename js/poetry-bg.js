@@ -18,7 +18,11 @@
     swayMax: 24,           // 左右摆动幅度上限（px）
     spawnDelayMin: 600,    // 下次出现的最短间隔
     spawnDelayMax: 1600,   // 下次出现的最长间隔
-    mobileMaxChars: 8      // 手机端跳过更长的句子
+    mobileMaxChars: 8,     // 手机端跳过更长的句子
+    sizeScaleMin: 1,       // 字号随机下限（相对当前基准）
+    sizeScaleMax: 2,       // 字号随机上限，不超过基准两倍
+    hitPadX: 16,           // 基准碰撞箱左右余量（随字号缩放）
+    hitPadY: 12            // 基准碰撞箱上下余量（随字号缩放）
   };
 
   var POEMS = [
@@ -127,6 +131,14 @@
     return dir;
   }
 
+  function pickScale() {
+    return rand(CONFIG.sizeScaleMin, CONFIG.sizeScaleMax);
+  }
+
+  function opacityForScale(scale) {
+    return CONFIG.opacity / scale;
+  }
+
   function metrics(text, size) {
     var chars = Array.from(text);
     var h = 0;
@@ -136,11 +148,30 @@
     return { w: size * 1.35, h: h, chars: chars };
   }
 
-  function overlaps(a, b) {
-    return !(a.x + a.w < b.x || b.x + b.w < a.x || a.y + a.h < b.y || b.y + b.h < a.y);
+  function hitPads(scale) {
+    return {
+      x: CONFIG.hitPadX * scale,
+      y: CONFIG.hitPadY * scale
+    };
   }
 
-  function findPlacement(m) {
+  function makeBox(x, y, w, h, scale) {
+    var pad = hitPads(scale);
+    return { x: x - pad.x, y: y - pad.y, w: w + pad.x * 2, h: h + pad.y * 2 };
+  }
+
+  function syncBox(p) {
+    p.box.x = p.x - p.padX;
+    p.box.y = p.y - p.padY;
+    p.box.w = p.w + p.padX * 2;
+    p.box.h = p.h + p.padY * 2;
+  }
+
+  function overlaps(a, b) {
+    return !(a.x + a.w <= b.x || b.x + b.w <= a.x || a.y + a.h <= b.y || b.y + b.h <= a.y);
+  }
+
+  function findPlacement(m, scale) {
     var mobile = isMobile();
     var vw = window.innerWidth;
     var vh = window.innerHeight;
@@ -181,14 +212,16 @@
       if (y + m.h > vh - padY) y = Math.max(padY, vh - padY - m.h);
       if (y < padY) y = padY;
 
-      var box = { x: x - 16, y: y - 12, w: m.w + 32, h: m.h + 24 };
+      var box = makeBox(x, y, m.w, m.h, scale);
       var hit = false;
       for (var i = 0; i < active.length; i++) {
         if (overlaps(box, active[i].box)) { hit = true; break; }
       }
       if (!hit) return { x: x, y: y, dir: dir, box: box };
     }
-    return null;
+    var fx = minX + rand(0, Math.max(1, maxX - minX));
+    var fy = padY + rand(0, Math.max(1, vh - padY * 2 - m.h));
+    return { x: fx, y: fy, dir: dir, box: makeBox(fx, fy, m.w, m.h, scale) };
   }
 
   function createLine() {
@@ -231,13 +264,16 @@
     if (active.length >= maxConcurrent()) return;
 
     var text = nextPoem();
-    var size = fontSize();
+    var scale = pickScale();
+    var size = fontSize() * scale;
     var m = metrics(text, size);
-    var place = findPlacement(m);
+    var place = findPlacement(m, scale);
     if (!place) return;
 
     var el = acquire();
     fillLine(el, m.chars);
+    var peakOpacity = opacityForScale(scale);
+    var pad = hitPads(scale);
     el.style.fontSize = size + 'px';
     el.style.opacity = '0';
     el.style.transition = 'opacity ' + (CONFIG.fadeInMs / 1000) + 's ease';
@@ -246,20 +282,29 @@
     var item = {
       el: el,
       x0: place.x,
+      x: place.x,
       y0: place.y,
       y: place.y,
+      vx: rand(-8, 8),
+      w: m.w,
+      h: m.h,
+      scale: scale,
+      padX: pad.x,
+      padY: pad.y,
+      mass: Math.max(0.35, scale * scale),
       box: place.box,
       vy: place.dir * rand(CONFIG.floatSpeedMin, CONFIG.floatSpeedMax),
       sway: rand(CONFIG.swayMin, CONFIG.swayMax),
       omega: rand(0.35, 0.7),
       phase: rand(0, Math.PI * 2),
       born: performance.now(),
+      opacity: peakOpacity,
       fading: false
     };
     active.push(item);
 
     el.offsetWidth;
-    el.style.opacity = String(CONFIG.opacity);
+    el.style.opacity = String(peakOpacity);
 
     var life = rand(CONFIG.lifeMinMs, CONFIG.lifeMaxMs);
     item.fadeTimer = addTimer(setTimeout(function () {
@@ -287,20 +332,93 @@
     }, wait));
   }
 
+  function resolveCollisions() {
+    for (var i = 0; i < active.length; i++) {
+      for (var j = i + 1; j < active.length; j++) {
+        var a = active[i];
+        var b = active[j];
+        if (!overlaps(a.box, b.box)) continue;
+
+        var overlapX = Math.min(a.box.x + a.box.w - b.box.x, b.box.x + b.box.w - a.box.x);
+        var overlapY = Math.min(a.box.y + a.box.h - b.box.y, b.box.y + b.box.h - a.box.y);
+        if (overlapX <= 0 || overlapY <= 0) continue;
+
+        var invA = 1 / a.mass;
+        var invB = 1 / b.mass;
+        var invSum = invA + invB;
+        var acx = a.x + a.w * 0.5;
+        var bcx = b.x + b.w * 0.5;
+        var acy = a.y + a.h * 0.5;
+        var bcy = b.y + b.h * 0.5;
+
+        if (overlapX < overlapY) {
+          var dirX = acx < bcx ? -1 : 1;
+          var sepX = overlapX * 0.6;
+          a.x += dirX * sepX * (invA / invSum);
+          b.x -= dirX * sepX * (invB / invSum);
+          var relX = a.vx - b.vx;
+          if (relX * dirX > 0) {
+            a.vx -= relX * 1.15 * (invA / invSum);
+            b.vx += relX * 1.15 * (invB / invSum);
+          }
+          a.vx += dirX * 28 * (invA / invSum);
+          b.vx -= dirX * 28 * (invB / invSum);
+        } else {
+          var dirY = acy < bcy ? -1 : 1;
+          var sepY = overlapY * 0.6;
+          a.y += dirY * sepY * (invA / invSum);
+          b.y -= dirY * sepY * (invB / invSum);
+          var relY = a.vy - b.vy;
+          if (relY * dirY > 0) {
+            a.vy -= relY * 1.05 * (invA / invSum);
+            b.vy += relY * 1.05 * (invB / invSum);
+          }
+          a.vy += dirY * 16 * (invA / invSum);
+          b.vy -= dirY * 16 * (invB / invSum);
+        }
+        syncBox(a);
+        syncBox(b);
+      }
+    }
+  }
+
   function tick(now) {
     if (!running) return;
     if (!lastTick) lastTick = now;
     var dt = Math.min(48, now - lastTick) / 1000;
     lastTick = now;
 
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+
     for (var i = 0; i < active.length; i++) {
       var p = active[i];
       var t = (now - p.born) / 1000;
-      p.y = p.y0 + p.vy * t;
-      var x = p.x0 + Math.sin(t * p.omega + p.phase) * p.sway;
-      p.el.style.transform = 'translate3d(' + x + 'px,' + p.y + 'px,0)';
-      p.box.x = x - 16;
-      p.box.y = p.y - 12;
+      var homeX = p.x0 + Math.sin(t * p.omega + p.phase) * p.sway;
+      p.vx += (homeX - p.x) * 18 * dt;
+      p.vx *= Math.pow(0.90, dt * 60);
+      if (p.vx > 80) p.vx = 80;
+      if (p.vx < -80) p.vx = -80;
+      if (p.vy > 36) p.vy = 36;
+      if (p.vy < -36) p.vy = -36;
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+
+      if (p.x < 8) { p.x = 8; p.vx = Math.abs(p.vx) * 0.35; }
+      if (p.x > vw - p.w - 8) { p.x = Math.max(8, vw - p.w - 8); p.vx = -Math.abs(p.vx) * 0.35; }
+      if (p.y < -p.h) { p.y = -p.h; p.vy = Math.abs(p.vy) * 0.25; }
+      if (p.y > vh + 40) { p.y = vh + 40; p.vy = -Math.abs(p.vy) * 0.25; }
+      syncBox(p);
+    }
+
+    resolveCollisions();
+
+    for (var k = 0; k < active.length; k++) {
+      var q = active[k];
+      if (q.x < 8) q.x = 8;
+      if (q.x > vw - q.w - 8) q.x = Math.max(8, vw - q.w - 8);
+      syncBox(q);
+      q.el.style.transform = 'translate3d(' + q.x + 'px,' + q.y + 'px,0)';
     }
 
     rafId = requestAnimationFrame(tick);
@@ -314,12 +432,15 @@
     var spots = isMobile()
       ? [{ x: 0.10, y: 0.16 }, { x: 0.80, y: 0.38 }, { x: 0.12, y: 0.68 }]
       : [{ x: 0.10, y: 0.16 }, { x: 0.82, y: 0.22 }, { x: 0.14, y: 0.56 }, { x: 0.78, y: 0.62 }];
-    var size = fontSize();
+    var base = fontSize();
     var vw = window.innerWidth;
     var vh = window.innerHeight;
 
     for (var i = 0; i < picks.length; i++) {
+      var scale = pickScale();
+      var size = base * scale;
       var m = metrics(picks[i], size);
+      var pad = hitPads(scale);
       var el = acquire();
       fillLine(el, m.chars);
       var x = spots[i].x * vw;
@@ -328,12 +449,15 @@
       y = Math.max(16, Math.min(vh - m.h - 16, y));
       el.style.fontSize = size + 'px';
       el.style.transition = 'none';
-      el.style.opacity = String(CONFIG.opacity * 0.72);
+      el.style.opacity = String(opacityForScale(scale) * 0.72);
       el.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
       active.push({
-        el: el, x0: x, y0: y, y: y,
-        box: { x: x, y: y, w: m.w, h: m.h },
-        vy: 0, sway: 0, omega: 1, phase: 0, born: 0, fading: false
+        el: el, x0: x, x: x, y0: y, y: y, vx: 0,
+        w: m.w, h: m.h, scale: scale, padX: pad.x, padY: pad.y,
+        mass: Math.max(0.35, scale * scale),
+        box: makeBox(x, y, m.w, m.h, scale),
+        vy: 0, sway: 0, omega: 1, phase: 0, born: 0,
+        opacity: opacityForScale(scale), fading: false
       });
     }
   }
