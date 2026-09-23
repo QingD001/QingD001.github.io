@@ -6,8 +6,8 @@
     fontSizeDesktop: 22,   // 桌面字号（px）
     fontSizeMobile: 15,    // 手机字号（px）
     opacity: 0.15,         // 诗句峰值透明度
-    maxDesktop: 5,         // 桌面同时显示数量
-    maxMobile: 2,          // 手机同时显示数量
+    maxDesktop: 15,        // 桌面同时显示数量
+    maxMobile: 9,          // 手机同时显示数量
     floatSpeedMin: 7,      // 上下漂浮速度下限（px/s）
     floatSpeedMax: 14,     // 上下漂浮速度上限（px/s）
     fadeInMs: 2000,        // 渐现时长
@@ -16,8 +16,8 @@
     lifeMaxMs: 15000,      // 可见停留上限
     swayMin: 12,           // 左右摆动幅度下限（px）
     swayMax: 24,           // 左右摆动幅度上限（px）
-    spawnDelayMin: 1600,   // 下次出现的最短间隔
-    spawnDelayMax: 3800,   // 下次出现的最长间隔
+    spawnDelayMin: 600,    // 下次出现的最短间隔
+    spawnDelayMax: 1600,   // 下次出现的最长间隔
     mobileMaxChars: 8      // 手机端跳过更长的句子
   };
 
@@ -41,7 +41,13 @@
     '彩云易散',
     '玉带林中挂',
     '寒塘渡鹤影',
-    '冷月葬花魂'
+    '冷月葬花魂',
+    '孤标傲世谁偕隐同菊瘦',
+    '白玉堂前春解舞',
+    '好风凭借力，送我上青云',
+    '几曾随逝水，何必委芳尘？',
+    '痴泪三生怨红楼',
+    '魂归离恨天'
   ];
 
   var PUNCT = /[，。、；：！？,.!?;:\s]/;
@@ -148,11 +154,11 @@
       maxX = Math.max(minX, vw - padX - m.w);
     }
 
-    var cols = mobile ? 3 : 5;
+    var cols = mobile ? 5 : 9;
     var colW = Math.max(1, (maxX - minX) / cols);
     var dir = pickDir();
 
-    for (var attempt = 0; attempt < 20; attempt++) {
+    for (var attempt = 0; attempt < 36; attempt++) {
       var col;
       if (mobile) {
         col = Math.random() < 0.8 ? (Math.random() < 0.5 ? 0 : cols - 1) : 1;
@@ -175,7 +181,7 @@
       if (y + m.h > vh - padY) y = Math.max(padY, vh - padY - m.h);
       if (y < padY) y = padY;
 
-      var box = { x: x - 28, y: y - 20, w: m.w + 56, h: m.h + 40 };
+      var box = { x: x - 16, y: y - 12, w: m.w + 32, h: m.h + 24 };
       var hit = false;
       for (var i = 0; i < active.length; i++) {
         if (overlaps(box, active[i].box)) { hit = true; break; }
@@ -293,8 +299,8 @@
       p.y = p.y0 + p.vy * t;
       var x = p.x0 + Math.sin(t * p.omega + p.phase) * p.sway;
       p.el.style.transform = 'translate3d(' + x + 'px,' + p.y + 'px,0)';
-      p.box.x = x - 28;
-      p.box.y = p.y - 20;
+      p.box.x = x - 16;
+      p.box.y = p.y - 12;
     }
 
     rafId = requestAnimationFrame(tick);
@@ -303,11 +309,11 @@
   function showStatic() {
     recycleAll();
     var picks = isMobile()
-      ? ['霁月难逢', '冷月葬花魂']
-      : ['霁月难逢', '彩云易散', '冷月葬花魂'];
+      ? ['霁月难逢', '魂归离恨天', '冷月葬花魂']
+      : ['霁月难逢', '彩云易散', '魂归离恨天', '冷月葬花魂'];
     var spots = isMobile()
-      ? [{ x: 0.10, y: 0.16 }, { x: 0.78, y: 0.42 }]
-      : [{ x: 0.10, y: 0.16 }, { x: 0.82, y: 0.26 }, { x: 0.14, y: 0.58 }];
+      ? [{ x: 0.10, y: 0.16 }, { x: 0.80, y: 0.38 }, { x: 0.12, y: 0.68 }]
+      : [{ x: 0.10, y: 0.16 }, { x: 0.82, y: 0.22 }, { x: 0.14, y: 0.56 }, { x: 0.78, y: 0.62 }];
     var size = fontSize();
     var vw = window.innerWidth;
     var vh = window.innerHeight;
@@ -342,7 +348,7 @@
     lastTick = 0;
     applyLayerVars();
     layer.style.display = '';
-    scheduleSpawn(true, isMobile() ? 1 : 3);
+    scheduleSpawn(true, isMobile() ? 5 : 9);
     rafId = requestAnimationFrame(tick);
   }
 
