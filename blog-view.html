@@ -42,20 +42,27 @@
       if (file && /^posts\/[^/]+\.html$/i.test(file)) {
         currentIndex = blogPosts.findIndex(function (p) { return p.file === file; });
         if (currentIndex !== -1) {
+          // 加载完成前先隐藏 iframe:内容撑开前内部文档会露出自己的滚动条,一闪而过
+          frame.style.visibility = 'hidden';
           frame.src = 'blogs/' + file;
           frame.onload = function () {
             try {
               var doc = frame.contentDocument || frame.contentWindow.document;
               var height = doc.documentElement.scrollHeight;
               frame.style.height = height + 'px';
-              
-              // 确保iframe内部也不显示滚动条
+
+              // 确保iframe内部也不显示滚动条,整页统一用浏览器滚动栏
               doc.body.style.overflow = 'hidden';
               doc.documentElement.style.overflow = 'hidden';
             } catch (e) {
               // 如果跨域或无法访问，则保持默认高度
             }
+            frame.style.visibility = 'visible';
           };
+          // 保险:加载异常迟迟不触发 onload 时强制显示,避免白屏
+          setTimeout(function () {
+            if (frame.style.visibility === 'hidden') frame.style.visibility = 'visible';
+          }, 3000);
         } else {
           frame.srcdoc = '<p style="padding:24px;color:#6b7280;">未找到对应的博客（' + file + '）。</p>';
         }
