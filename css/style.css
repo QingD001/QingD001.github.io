@@ -670,8 +670,12 @@ body.dark .side-card {
 .blog-layout {
   display: grid;
   grid-template-columns: 180px minmax(0, 1fr);
-  gap: 32px;
-  align-items: start; /* 关键:非 stretch 时 sticky 侧栏才能在网格区域内生效 */
+  column-gap: 32px;
+  align-items: stretch; /* 关键:侧栏列随内容列撑满高度,其内部 sticky 导航才有滚动空间 */
+}
+
+.blog-side-col {
+  min-width: 0;
 }
 
 .blog-sidebar {
@@ -810,12 +814,12 @@ body.dark .blog-card .blog-cat {
   color: #93c5fd;
 }
 
-/* 窄屏:侧栏变为吸顶横向 chips 行,分组内文章链接收起 */
+/* 窄屏:标题 + 分组导航一起吸顶,导航变为横向 chips 行 */
 @media (max-width: 860px) {
   .blog-layout {
     display: block; /* 关键:单列 grid 行高等于侧栏自身高度,sticky 无法生效;块流下包含块覆盖整个内容高度 */
   }
-  .blog-sidebar {
+  .blog-side-col {
     position: sticky;
     top: var(--nav-height);
     z-index: 40;
@@ -823,7 +827,15 @@ body.dark .blog-card .blog-cat {
     padding: 6px 0 10px;
     margin-bottom: 16px;
   }
-  body.dark .blog-sidebar {
+  .blog-side-col .section-title {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+  }
+  .blog-sidebar {
+    position: static; /* 吸顶职责交给 .blog-side-col */
+  }
+  body.dark .blog-side-col {
     background: #111827;
   }
   .blog-group-nav {

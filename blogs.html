@@ -23,13 +23,14 @@
   </header>
 
   <main class="main">
-    <h1 class="section-title">Blogs</h1>
-
-    <!-- 博客列表由 JS 根据 blogPosts.js 渲染:侧栏切换分组,只显示当前分组的文章 -->
+    <!-- 左侧列:Blogs 标题 + 分组导航(吸顶);右侧:当前分组标题与卡片,与 Blogs 齐平 -->
     <div class="blog-layout">
-      <aside class="blog-sidebar">
-        <nav class="blog-group-nav" id="blogGroupNav" aria-label="博客分组导航"></nav>
-      </aside>
+      <div class="blog-side-col">
+        <h1 class="section-title">Blogs</h1>
+        <aside class="blog-sidebar">
+          <nav class="blog-group-nav" id="blogGroupNav" aria-label="博客分组导航"></nav>
+        </aside>
+      </div>
       <div class="blog-groups" id="blogGroups"></div>
     </div>
   </main>
