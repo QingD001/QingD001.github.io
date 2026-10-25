@@ -25,7 +25,7 @@
   <main class="main">
     <h1 class="section-title">Blogs</h1>
 
-    <!-- 博客列表由 JS 根据 blogPosts.js 渲染:左侧分组导航 + 右侧分组卡片 -->
+    <!-- 博客列表由 JS 根据 blogPosts.js 渲染:侧栏切换分组,只显示当前分组的文章 -->
     <div class="blog-layout">
       <aside class="blog-sidebar">
         <nav class="blog-group-nav" id="blogGroupNav" aria-label="博客分组导航"></nav>
@@ -62,15 +62,44 @@
       });
 
       var names = Object.keys(groups).sort(function (a, b) { return groups[a].index - groups[b].index; });
-      var sections = [];
+      var catByIndex = {}; // index -> 分组名,供 URL hash 定位
 
+      // 侧栏:每个分组一个条目;条目下的文章链接只在本组展开,互不互通
       names.forEach(function (cat) {
         var g = groups[cat];
         if (!g.items.length) return; // 空分组不渲染
 
+        catByIndex[g.index] = cat;
+
+        var item = document.createElement('div');
+        item.className = 'blog-group-nav-item';
+        item.setAttribute('data-cat-index', g.index);
+
+        var glink = document.createElement('a');
+        glink.className = 'blog-group-link';
+        glink.href = '#group-' + g.index; // 数字 id,规避中文锚点编码问题
+        glink.textContent = cat + ' (' + g.items.length + ')';
+        item.appendChild(glink);
+
+        var sub = document.createElement('div');
+        sub.className = 'blog-post-links';
+        g.items.forEach(function (post) {
+          var plink = document.createElement('a');
+          plink.href = '#post-' + blogPosts.indexOf(post);
+          plink.textContent = post.title;
+          sub.appendChild(plink);
+        });
+        item.appendChild(sub);
+        navEl.appendChild(item);
+      });
+
+      // 渲染当前分组的文章卡片(内容区只显示当前分组)
+      function renderGroup(cat) {
+        var g = groups[cat];
+        groupsEl.innerHTML = '';
+
         var section = document.createElement('section');
         section.className = 'blog-group';
-        section.id = 'group-' + g.index; // 数字 id,规避中文锚点编码问题
 
         var h2 = document.createElement('h2');
         h2.className = 'blog-group-title';
@@ -87,6 +116,7 @@
           var li = document.createElement('li');
           var a = document.createElement('a');
           a.className = 'blog-card';
+          a.id = 'post-' + blogPosts.indexOf(post); // 供本组侧栏链接跳转
           a.href = base + encodeURIComponent(post.file);
           a.innerHTML =
             '<h3 class="blog-title">' + escapeHtml(post.title) + '</h3>' +
@@ -100,55 +130,28 @@
         });
         section.appendChild(ul);
         groupsEl.appendChild(section);
-        sections.push(section);
 
-        var link = document.createElement('a');
-        link.href = '#' + section.id;
-        link.textContent = cat;
-        link.setAttribute('data-target', section.id);
-        navEl.appendChild(link);
-      });
-
-      // 滚动监听高亮当前分组(scroll-spy)
-      function setActive(id) {
-        var links = navEl.querySelectorAll('a');
-        for (var i = 0; i < links.length; i++) {
-          links[i].classList.toggle('active', links[i].getAttribute('data-target') === id);
+        // 侧栏:只有当前分组展开文章链接
+        var items = navEl.querySelectorAll('.blog-group-nav-item');
+        for (var i = 0; i < items.length; i++) {
+          var isOpen = items[i].getAttribute('data-cat-index') === String(g.index);
+          items[i].classList.toggle('open', isOpen);
+          var l = items[i].querySelector('.blog-group-link');
+          if (l) l.classList.toggle('active', isOpen);
         }
       }
 
-      if ('IntersectionObserver' in window) {
-        var activeId = sections.length ? sections[0].id : null;
-        var io = new IntersectionObserver(function (entries) {
-          entries.forEach(function (entry) {
-            if (entry.isIntersecting) activeId = entry.target.id;
-          });
-          setActive(activeId);
-        }, { rootMargin: '-90px 0px -60% 0px' });
-        sections.forEach(function (sec) { io.observe(sec); });
-        // 页面底部兜底:最后一个分组较矮时也可能进不了观察带
-        window.addEventListener('scroll', function () {
-          if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 4) {
-            setActive(sections[sections.length - 1].id);
-          }
-        }, { passive: true });
-      } else {
-        // 旧浏览器回退:节流滚动监听
-        var ticking = false;
-        window.addEventListener('scroll', function () {
-          if (ticking) return;
-          ticking = true;
-          requestAnimationFrame(function () {
-            ticking = false;
-            var line = 56 + 90; // 吸顶导航高度 + 余量
-            var current = sections[0].id;
-            for (var i = 0; i < sections.length; i++) {
-              if (sections[i].getBoundingClientRect().top <= line) current = sections[i].id;
-            }
-            setActive(current);
-          });
-        }, { passive: true });
+      function groupFromHash() {
+        var m = /^#group-(\d+)$/.exec(location.hash);
+        return (m && catByIndex[m[1]]) ? catByIndex[m[1]] : null;
       }
+
+      window.addEventListener('hashchange', function () {
+        var cat = groupFromHash();
+        if (cat) renderGroup(cat); // #post-N 等锚点不触发切换
+      });
+
+      renderGroup(groupFromHash() || names[0]);
     })();
   </script>
   <script src="js/main.js"></script>

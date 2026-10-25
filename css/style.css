@@ -666,7 +666,7 @@ body.dark .side-card {
   margin: 0;
 }
 
-/* ========== Blogs 列表（分组卡片 + 侧栏导航） ========== */
+/* ========== Blogs 列表（侧栏切换分组,只显示当前分组） ========== */
 .blog-layout {
   display: grid;
   grid-template-columns: 180px minmax(0, 1fr);
@@ -691,7 +691,8 @@ body.dark .side-card {
   box-shadow: var(--shadow);
 }
 
-.blog-group-nav a {
+.blog-group-link {
+  display: block;
   padding: 8px 12px;
   border-radius: 8px;
   color: var(--text-muted);
@@ -700,22 +701,54 @@ body.dark .side-card {
   transition: color 0.2s, background 0.2s;
 }
 
-.blog-group-nav a:hover {
+.blog-group-link:hover {
   color: var(--text);
   background: rgba(102, 178, 255, 0.12);
 }
 
-.blog-group-nav a.active {
+.blog-group-link.active {
   color: var(--text);
   font-weight: 600;
   background: rgba(102, 178, 255, 0.18);
   box-shadow: inset 3px 0 0 var(--accent-blue); /* 左侧指示条 */
 }
 
-/* 分组区块 */
+/* 分组条目下的文章链接:只有当前分组展开,各组互不互通 */
+.blog-post-links {
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  padding: 2px 0 6px 12px;
+  margin-left: 16px;
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.blog-group-nav-item.open .blog-post-links {
+  display: flex;
+}
+
+.blog-post-links a {
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.2s, background 0.2s;
+}
+
+.blog-post-links a:hover {
+  color: var(--text);
+  background: rgba(102, 178, 255, 0.1);
+}
+
+/* 当前分组内容 */
 .blog-group {
-  scroll-margin-top: calc(var(--nav-height) + 24px); /* 锚点跳转/滚动时避开吸顶导航 */
-  margin-bottom: 40px;
+  scroll-margin-top: calc(var(--nav-height) + 24px); /* 锚点跳转时避开吸顶导航 */
 }
 
 .blog-group-title {
@@ -751,6 +784,7 @@ body.dark .side-card {
   text-decoration: none;
   color: var(--text);
   box-shadow: var(--shadow);
+  scroll-margin-top: calc(var(--nav-height) + 24px); /* 侧栏文章链接跳转定位 */
   transition: transform 0.15s ease, box-shadow 0.2s, border-color 0.2s;
 }
 
@@ -805,12 +839,16 @@ body.dark .blog-card {
   border-color: rgba(255, 255, 255, 0.08);
 }
 
+body.dark .blog-post-links {
+  border-left-color: rgba(255, 255, 255, 0.1);
+}
+
 body.dark .blog-card .blog-cat {
   background: rgba(96, 165, 250, 0.18);
   color: #93c5fd;
 }
 
-/* 窄屏:侧栏变为吸顶横向 chips 行 */
+/* 窄屏:侧栏变为吸顶横向 chips 行,分组内文章链接收起 */
 @media (max-width: 860px) {
   .blog-layout {
     display: block; /* 关键:单列 grid 行高等于侧栏自身高度,sticky 无法生效;块流下包含块覆盖整个内容高度 */
@@ -833,9 +871,14 @@ body.dark .blog-card .blog-cat {
     padding: 8px;
     -webkit-overflow-scrolling: touch;
   }
-  .blog-group-nav a {
+  .blog-group-link {
     flex-shrink: 0;
     white-space: nowrap;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+  }
+  .blog-group-nav-item.open .blog-post-links {
+    display: none;
   }
 }
 
