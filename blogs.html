@@ -64,33 +64,18 @@
       var names = Object.keys(groups).sort(function (a, b) { return groups[a].index - groups[b].index; });
       var catByIndex = {}; // index -> 分组名,供 URL hash 定位
 
-      // 侧栏:每个分组一个条目;条目下的文章链接只在本组展开,互不互通
+      // 侧栏:每个分组一个链接,不展开文章标题
       names.forEach(function (cat) {
         var g = groups[cat];
         if (!g.items.length) return; // 空分组不渲染
 
         catByIndex[g.index] = cat;
 
-        var item = document.createElement('div');
-        item.className = 'blog-group-nav-item';
-        item.setAttribute('data-cat-index', g.index);
-
         var glink = document.createElement('a');
         glink.className = 'blog-group-link';
         glink.href = '#group-' + g.index; // 数字 id,规避中文锚点编码问题
         glink.textContent = cat + ' (' + g.items.length + ')';
-        item.appendChild(glink);
-
-        var sub = document.createElement('div');
-        sub.className = 'blog-post-links';
-        g.items.forEach(function (post) {
-          var plink = document.createElement('a');
-          plink.href = '#post-' + blogPosts.indexOf(post);
-          plink.textContent = post.title;
-          sub.appendChild(plink);
-        });
-        item.appendChild(sub);
-        navEl.appendChild(item);
+        navEl.appendChild(glink);
       });
 
       // 渲染当前分组的文章卡片(内容区只显示当前分组)
@@ -116,7 +101,6 @@
           var li = document.createElement('li');
           var a = document.createElement('a');
           a.className = 'blog-card';
-          a.id = 'post-' + blogPosts.indexOf(post); // 供本组侧栏链接跳转
           a.href = base + encodeURIComponent(post.file);
           a.innerHTML =
             '<h3 class="blog-title">' + escapeHtml(post.title) + '</h3>' +
@@ -131,13 +115,10 @@
         section.appendChild(ul);
         groupsEl.appendChild(section);
 
-        // 侧栏:只有当前分组展开文章链接
-        var items = navEl.querySelectorAll('.blog-group-nav-item');
-        for (var i = 0; i < items.length; i++) {
-          var isOpen = items[i].getAttribute('data-cat-index') === String(g.index);
-          items[i].classList.toggle('open', isOpen);
-          var l = items[i].querySelector('.blog-group-link');
-          if (l) l.classList.toggle('active', isOpen);
+        // 侧栏高亮当前分组
+        var links = navEl.querySelectorAll('.blog-group-link');
+        for (var i = 0; i < links.length; i++) {
+          links[i].classList.toggle('active', links[i].getAttribute('href') === '#group-' + g.index);
         }
       }
 
