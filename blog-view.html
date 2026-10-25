@@ -30,32 +30,10 @@
     <div class="blog-nav"></div>
   </div>
 
+  <!-- 博客数据统一由 blogPosts.js 提供 -->
+  <script src="blogPosts.js?v=1"></script>
   <script>
     (function () {
-      // 博客列表请在 blogs.html 中同步更新
-      var blogPosts = [
-        { title: 'Introduction to Decision Tree ', date: '26-03-16', file: 'posts/Decision-Tree.html' },
-        { title: "Introduction to Byte Latent Transformer" , date:'26-03-18' ,file: "posts/Introduction-to-BLT.html" },
-        { title: "Leetcode Weekly Contest 494" , date:'26-03-22' ,file: "posts/Leetcode-SingleRound494.html" },
-        { title: "近期 dp 题总结" , date:'26-04-20' ,file: "posts/近期 dp 题总结.html" },
-        { title: "部分搜索与数学题心得" , date:'26-04-21' ,file: "posts/部分搜索与数学题心得.html" },
-        { title: "Educational Codeforces Round 189 (Div. 2)" , date:'26-04-21' ,file: "posts/Educational Codeforces Round 189 (Div. 2).html" },
-        { title: "LLM成熟框架讲解" , date:'26-05-08' ,file: "posts/LLM成熟框架讲解.html" },
-        { title: "CF Round 1098 Div 2" , date:'26-05-17' ,file: "posts/CF Round 1098 Div 2.html" },
-        { title: "生成函数" , date:'26-05-19' ,file: "posts/生成函数.html" },
-        { title: "集合论" , date:'26-05-19' ,file: "posts/集合论.html" },
-        { title: "CF Round 1099 Div 2" , date:'26-05-22' ,file: "posts/CF Round 1099 Div 2.html" },
-        { title: "DS 专项训练 Day1" , date:'26-09-23' ,file: "posts/DS 专项训练 Day1.html" },
-        { title: "ABC 477" , date:'2026-09-28' ,file: "posts/ABC 477.html" },
-        { title: "国庆集训 Day2" , date:'2026-10-03' ,file: "posts/国庆集训 Day2.html" },
-        { title: "国庆训练随记 Day7" , date:'2026-10-09' ,file: "posts/国庆训练随记 Day7.html" },
-        { title: "DS 专项训练 Day2" , date:'2026-10-10' ,file: "posts/DS 专项训练 Day2.html" },
-        { title: "CSP36 题解" , date:'2026-10-11' ,file: "posts/CSP36 题解.html" },
-        { title: "字符串学习笔记 1" , date:'2026-10-12' ,file: "posts/字符串学习笔记 1.html" },
-        { title: "ABC 479" , date:'2026-10-21' ,file: "posts/ABC 479.html" },
-        { title: "ABC 481" , date:'2026-10-25' ,file: "posts/ABC 481.html" }
-      ];
-
       var params = new URLSearchParams(location.search);
       var file = params.get('file');
       var frame = document.getElementById('blogFrame');

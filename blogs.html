@@ -25,50 +25,131 @@
   <main class="main">
     <h1 class="section-title">Blogs</h1>
 
-    <!-- 博客列表由 JS 根据 blogPosts 渲染 -->
-    <ul class="blog-list" id="blogList"></ul>
+    <!-- 博客列表由 JS 根据 blogPosts.js 渲染:左侧分组导航 + 右侧分组卡片 -->
+    <div class="blog-layout">
+      <aside class="blog-sidebar">
+        <nav class="blog-group-nav" id="blogGroupNav" aria-label="博客分组导航"></nav>
+      </aside>
+      <div class="blog-groups" id="blogGroups"></div>
+    </div>
   </main>
 
   <footer class="site-footer">
     © 2026 Jinlin Zheng. My Blog。
   </footer>
 
+  <!-- 博客数据统一由 blogPosts.js 提供(新博客:blogs/posts/ 放文件 + blogPosts.js 追加一条) -->
+  <script src="blogPosts.js?v=1"></script>
   <script>
-    // update blog ：在 blogs/posts下放入文件，在 blog & blog-view 里添加地址字段
-    var blogPosts = [
-      { title: 'Introduction to Decision Tree', date: '26-03-16', file: 'posts/Decision-Tree.html' },
-      { title: "Introduction to Byte Latent Transformer" , date:'2026-03-18' ,file: "posts/Introduction-to-BLT.html" },
-      { title: "Leetcode Weekly Contest 494" , date:'2026-03-22' ,file: "posts/Leetcode-SingleRound494.html" },
-      { title: "近期 dp 题总结" , date:'2026-04-20' ,file: "posts/近期 dp 题总结.html" },
-      { title: "部分搜索与数学题心得" , date:'2026-04-21' ,file: "posts/部分搜索与数学题心得.html" },
-      { title: "Educational Codeforces Round 189 (Div. 2)" , date:'2026-04-21' ,file: "posts/Educational Codeforces Round 189 (Div. 2).html" },
-      { title: "LLM成熟框架讲解" , date:'2026-05-08' ,file: "posts/LLM成熟框架讲解.html" },
-      { title: "CF Round 1098 Div 2" , date:'2026-05-17' ,file: "posts/CF Round 1098 Div 2.html" },
-      { title: "生成函数" , date:'2026-05-19' ,file: "posts/生成函数.html" },
-      { title: "集合论" , date:'2026-05-19' ,file: "posts/集合论.html" },
-      { title: "CF Round 1099 Div 2" , date:'2026-05-22' ,file: "posts/CF Round 1099 Div 2.html" },
-      { title: "DS 专项训练 Day1" , date:'2026-09-23' ,file: "posts/DS 专项训练 Day1.html" },
-      { title: "ABC 477" , date:'2026-09-28' ,file: "posts/ABC 477.html" },
-      { title: "国庆集训 Day2" , date:'2026-10-03' ,file: "posts/国庆集训 Day2.html" },
-      { title: "国庆训练随记 Day7" , date:'2026-10-09' ,file: "posts/国庆训练随记 Day7.html" },
-      { title: "DS 专项训练 Day2" , date:'2026-10-10' ,file: "posts/DS 专项训练 Day2.html" },
-      { title: "CSP36 题解" , date:'2026-10-11' ,file: "posts/CSP36 题解.html" },
-      { title: "字符串学习笔记 1" , date:'2026-10-12' ,file: "posts/字符串学习笔记 1.html" },
-      { title: "ABC 479" , date:'2026-10-21' ,file: "posts/ABC 479.html" },
-      { title: "ABC 481" , date:'2026-10-25' ,file: "posts/ABC 481.html" }
-    ];
+    (function () {
+      var groupsEl = document.getElementById('blogGroups');
+      var navEl = document.getElementById('blogGroupNav');
+      if (!groupsEl || !navEl) return;
 
-    var listEl = document.getElementById('blogList');
-    var base = 'blog-view.html?file=';
-    blogPosts.forEach(function (post) {
-      var li = document.createElement('li');
-      var a = document.createElement('a');
-      a.href = base + encodeURIComponent(post.file);
-      a.innerHTML = '<span class="blog-title">' + escapeHtml(post.title) + '</span><span class="blog-date">' + escapeHtml(post.date) + '</span>';
-      li.appendChild(a);
-      listEl.appendChild(li);
-    });
-    function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+      var base = 'blog-view.html?file=';
+      function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+      // 按固定顺序分组;blogPosts 本身按日期升序,遍历顺序即组内顺序
+      var groups = {};
+      blogCategoryOrder.forEach(function (cat, i) { groups[cat] = { index: i, items: [] }; });
+      blogPosts.forEach(function (post) {
+        var g = groups[post.category];
+        if (!g) { // 容错:未识别分组归入"其他",排在最后
+          if (!groups['其他']) groups['其他'] = { index: blogCategoryOrder.length, items: [] };
+          g = groups['其他'];
+        }
+        g.items.push(post);
+      });
+
+      var names = Object.keys(groups).sort(function (a, b) { return groups[a].index - groups[b].index; });
+      var sections = [];
+
+      names.forEach(function (cat) {
+        var g = groups[cat];
+        if (!g.items.length) return; // 空分组不渲染
+
+        var section = document.createElement('section');
+        section.className = 'blog-group';
+        section.id = 'group-' + g.index; // 数字 id,规避中文锚点编码问题
+
+        var h2 = document.createElement('h2');
+        h2.className = 'blog-group-title';
+        h2.textContent = cat;
+        var cnt = document.createElement('span');
+        cnt.className = 'blog-group-count';
+        cnt.textContent = '(' + g.items.length + ')';
+        h2.appendChild(cnt);
+        section.appendChild(h2);
+
+        var ul = document.createElement('ul');
+        ul.className = 'blog-list';
+        g.items.forEach(function (post) {
+          var li = document.createElement('li');
+          var a = document.createElement('a');
+          a.className = 'blog-card';
+          a.href = base + encodeURIComponent(post.file);
+          a.innerHTML =
+            '<h3 class="blog-title">' + escapeHtml(post.title) + '</h3>' +
+            '<p class="blog-summary">' + escapeHtml(post.summary || '') + '</p>' +
+            '<div class="blog-card-meta">' +
+              '<span class="blog-date">' + escapeHtml(post.date) + '</span>' +
+              '<span class="blog-cat">' + escapeHtml(post.category) + '</span>' +
+            '</div>';
+          li.appendChild(a);
+          ul.appendChild(li);
+        });
+        section.appendChild(ul);
+        groupsEl.appendChild(section);
+        sections.push(section);
+
+        var link = document.createElement('a');
+        link.href = '#' + section.id;
+        link.textContent = cat;
+        link.setAttribute('data-target', section.id);
+        navEl.appendChild(link);
+      });
+
+      // 滚动监听高亮当前分组(scroll-spy)
+      function setActive(id) {
+        var links = navEl.querySelectorAll('a');
+        for (var i = 0; i < links.length; i++) {
+          links[i].classList.toggle('active', links[i].getAttribute('data-target') === id);
+        }
+      }
+
+      if ('IntersectionObserver' in window) {
+        var activeId = sections.length ? sections[0].id : null;
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) activeId = entry.target.id;
+          });
+          setActive(activeId);
+        }, { rootMargin: '-90px 0px -60% 0px' });
+        sections.forEach(function (sec) { io.observe(sec); });
+        // 页面底部兜底:最后一个分组较矮时也可能进不了观察带
+        window.addEventListener('scroll', function () {
+          if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 4) {
+            setActive(sections[sections.length - 1].id);
+          }
+        }, { passive: true });
+      } else {
+        // 旧浏览器回退:节流滚动监听
+        var ticking = false;
+        window.addEventListener('scroll', function () {
+          if (ticking) return;
+          ticking = true;
+          requestAnimationFrame(function () {
+            ticking = false;
+            var line = 56 + 90; // 吸顶导航高度 + 余量
+            var current = sections[0].id;
+            for (var i = 0; i < sections.length; i++) {
+              if (sections[i].getBoundingClientRect().top <= line) current = sections[i].id;
+            }
+            setActive(current);
+          });
+        }, { passive: true });
+      }
+    })();
   </script>
   <script src="js/main.js"></script>
 </body>

@@ -5,6 +5,7 @@
   --text-muted: #6b7280;
   --accent-blue: #66b2ff;
   --accent-blue-light: #add8e6;
+  --accent-blue-deep: #2b6cb0;
   --accent-green: #77dd77;
   --accent-yellow: #ffd966;
   --card-radius: 16px;
@@ -665,45 +666,190 @@ body.dark .side-card {
   margin: 0;
 }
 
-/* ========== Blogs 列表 ========== */
+/* ========== Blogs 列表（分组卡片 + 侧栏导航） ========== */
+.blog-layout {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 32px;
+  align-items: start; /* 关键:非 stretch 时 sticky 侧栏才能在网格区域内生效 */
+}
+
+.blog-sidebar {
+  position: sticky;
+  top: calc(var(--nav-height) + 24px); /* 吸顶导航(56px)下方 */
+  z-index: 40; /* 低于 site-header 的 100 */
+}
+
+.blog-group-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  background: var(--bg);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow);
+}
+
+.blog-group-nav a {
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.92rem;
+  transition: color 0.2s, background 0.2s;
+}
+
+.blog-group-nav a:hover {
+  color: var(--text);
+  background: rgba(102, 178, 255, 0.12);
+}
+
+.blog-group-nav a.active {
+  color: var(--text);
+  font-weight: 600;
+  background: rgba(102, 178, 255, 0.18);
+  box-shadow: inset 3px 0 0 var(--accent-blue); /* 左侧指示条 */
+}
+
+/* 分组区块 */
+.blog-group {
+  scroll-margin-top: calc(var(--nav-height) + 24px); /* 锚点跳转/滚动时避开吸顶导航 */
+  margin-bottom: 40px;
+}
+
+.blog-group-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0 0 16px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent-blue);
+}
+
+.blog-group-count {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-left: 8px;
+}
+
+/* 卡片列表 */
 .blog-list {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: grid;
+  gap: 20px;
 }
 
-.blog-list li {
-  margin-bottom: 16px;
-}
-
-.blog-list a {
+.blog-card {
   display: block;
-  padding: 16px 20px;
+  padding: 28px 24px; /* 加高卡片,参考站 ~40px 20px */
   background: var(--bg);
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: var(--card-radius);
   text-decoration: none;
   color: var(--text);
   box-shadow: var(--shadow);
-  transition: box-shadow 0.2s, border-color 0.2s;
+  transition: transform 0.15s ease, box-shadow 0.2s, border-color 0.2s;
 }
 
-.blog-list a:hover {
-  box-shadow: 0 8px 28px rgba(102, 178, 255, 0.12);
+.blog-card:hover {
+  transform: translateY(-3px); /* 参考站 hover 上浮,保留本站蓝色系 */
   border-color: var(--accent-blue-light);
+  box-shadow: 0 12px 32px rgba(102, 178, 255, 0.16);
 }
 
-.blog-list .blog-title {
-  display: inline-block;
-  font-weight: 600;
-  margin: 0 0 6px 0;
+.blog-card .blog-title {
+  display: block;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 10px;
 }
 
-.blog-list .blog-date {
-  display: inline-block;
-  margin-left: 4ch;
-  font-size: 0.85rem;
+.blog-card .blog-summary {
+  margin: 0 0 14px;
+  font-size: 0.92rem;
+  line-height: 1.7;
   color: var(--text-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* 一两句摘要,最多两行,超出省略 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.blog-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.82rem;
+}
+
+.blog-card .blog-date {
+  color: var(--text-muted);
+}
+
+.blog-card .blog-cat {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(102, 178, 255, 0.12);
+  color: var(--accent-blue-deep);
+  white-space: nowrap;
+}
+
+/* 暗色模式 */
+body.dark .blog-group-nav,
+body.dark .blog-card {
+  background: #1f2937;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark .blog-card .blog-cat {
+  background: rgba(96, 165, 250, 0.18);
+  color: #93c5fd;
+}
+
+/* 窄屏:侧栏变为吸顶横向 chips 行 */
+@media (max-width: 860px) {
+  .blog-layout {
+    display: block; /* 关键:单列 grid 行高等于侧栏自身高度,sticky 无法生效;块流下包含块覆盖整个内容高度 */
+  }
+  .blog-sidebar {
+    position: sticky;
+    top: var(--nav-height);
+    z-index: 40;
+    background: var(--bg); /* 挡住从下方滚过的卡片 */
+    padding: 6px 0 10px;
+    margin-bottom: 16px;
+  }
+  body.dark .blog-sidebar {
+    background: #111827;
+  }
+  .blog-group-nav {
+    flex-direction: row;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .blog-group-nav a {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+}
+
+/* 减少动态效果偏好 */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .blog-card {
+    transition: none;
+  }
+  .blog-card:hover {
+    transform: none;
+  }
 }
 
 /* ========== 博客文章页（嵌入的 HTML 用） ========== */
@@ -814,6 +960,7 @@ body.dark {
   --text-muted: #9ca3af;
   --accent-blue: #60a5fa;
   --accent-blue-light: #3b82f6;
+  --accent-blue-deep: #93c5fd;
   --accent-green: #34d399;
   --accent-yellow: #fbbf24;
   --border: rgba(255, 255, 255, 0.15);
@@ -837,7 +984,8 @@ body.dark .site-nav a.active {
 
 body.dark .profile-card,
 body.dark .item-card,
-body.dark .blog-list a {
+body.dark .blog-card,
+body.dark .blog-group-nav {
   background: #1f2937;
   border-color: rgba(255, 255, 255, 0.08);
 }
