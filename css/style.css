@@ -20,6 +20,7 @@
 
 html {
   scroll-behavior: smooth;
+  zoom: 1.2; /* 全站元素统一放大 120%(等同浏览器 120% 缩放) */
 }
 
 body {
