@@ -28,5 +28,6 @@ var blogPosts = [
   { title: 'CSP36 题解', date: '2026-10-11', file: 'posts/CSP36 题解.html', category: 'CSP', summary: 'CSP36 比赛题解,包含移动、梦境巡查、缓存模拟、跳房子、梦魇五道题的题意、思路与代码。' },
   { title: '字符串学习笔记 1', date: '2026-10-12', file: 'posts/字符串学习笔记 1.html', category: '字符串', summary: '字符串算法学习笔记第一篇,系统整理字符串 Hash(含碰撞分析与 Hack)、KMP 与 Z 函数、Trie、AC 自动机及后缀数组。' },
   { title: 'ABC 479', date: '2026-10-21', file: 'posts/ABC 479.html', category: 'Atcoder', summary: 'AtCoder ABC 479 题解,包含 C. Bento Packing、D. Back and Forth Distance、F. Narrow Passage 三道题的题意、思路与代码。' },
-  { title: 'ABC 481', date: '2026-10-25', file: 'posts/ABC 481.html', category: 'Atcoder', summary: 'AtCoder ABC 481 题解,包含 B–G 六道题(Polyline、Bank Accounts、Autopilot、Most Brilliant Starry Sky、Evil Shortest Path、Half-Baked)的题意、思路与代码。' }
+  { title: 'ABC 481', date: '2026-10-25', file: 'posts/ABC 481.html', category: 'Atcoder', summary: 'AtCoder ABC 481 题解,包含 B–G 六道题(Polyline、Bank Accounts、Autopilot、Most Brilliant Starry Sky、Evil Shortest Path、Half-Baked)的题意、思路与代码。' },
+  { title: 'CSP42 VP记', date: '2026-10-27', file: 'posts/CSP42 VP记.html', category: 'CSP', summary: 'CSP42 比赛 VP 记录,包含 A-银行家舍入、B-机器人宿管指南、D-石子游戏三道题的题意、思路与代码。' }
 ];
