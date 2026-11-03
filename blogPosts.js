@@ -6,7 +6,7 @@
  *  - category 必须是 blogCategoryOrder 中的分组;新增分组请同步更新 blogCategoryOrder;
  *  - summary 为卡片上显示的内容简介,一两句话即可。
  */
-var blogCategoryOrder = ['数学', 'Atcoder', 'Codeforces', 'CSP', 'Leetcode', '字符串', 'DS', 'dp', '机器学习', '大语言模型', '散记'];
+var blogCategoryOrder = ['数学', 'Atcoder', 'Codeforces', 'CSP', 'Leetcode', '字符串', 'DS', 'dp', '机器学习', '大语言模型', '社会学', '经济学', '历史学', '散记'];
 
 var blogPosts = [
   { title: 'Introduction to Decision Tree', date: '2026-03-16', file: 'posts/Decision-Tree.html', category: '机器学习', summary: '决策树入门讲义,讲解信息熵与信息增益、决策树构建与剪枝,以及随机森林(Bagging)与 Boosting 等优化算法。' },
@@ -29,5 +29,6 @@ var blogPosts = [
   { title: '字符串学习笔记 1', date: '2026-10-12', file: 'posts/字符串学习笔记 1.html', category: '字符串', summary: '字符串算法学习笔记第一篇,系统整理字符串 Hash(含碰撞分析与 Hack)、KMP 与 Z 函数、Trie、AC 自动机及后缀数组。' },
   { title: 'ABC 479', date: '2026-10-21', file: 'posts/ABC 479.html', category: 'Atcoder', summary: 'AtCoder ABC 479 题解,包含 C. Bento Packing、D. Back and Forth Distance、F. Narrow Passage 三道题的题意、思路与代码。' },
   { title: 'ABC 481', date: '2026-10-25', file: 'posts/ABC 481.html', category: 'Atcoder', summary: 'AtCoder ABC 481 题解,包含 B–G 六道题(Polyline、Bank Accounts、Autopilot、Most Brilliant Starry Sky、Evil Shortest Path、Half-Baked)的题意、思路与代码。' },
-  { title: 'CSP42 VP记', date: '2026-10-27', file: 'posts/CSP42 VP记.html', category: 'CSP', summary: 'CSP42 比赛 VP 记录,包含 A-银行家舍入、B-机器人宿管指南、D-石子游戏三道题的题意、思路与代码。' }
+  { title: 'CSP42 VP记', date: '2026-10-27', file: 'posts/CSP42 VP记.html', category: 'CSP', summary: 'CSP42 比赛 VP 记录,包含 A-银行家舍入、B-机器人宿管指南、D-石子游戏三道题的题意、思路与代码。' },
+  { title: '农业与膳食', date: '2026-11-03', file: 'posts/农业与膳食.html', category: '历史学', summary: '孙机《中国古代物质文化》读书笔记系列,梳理中国古代农具(耒耜、犁、曲辕犁)、五谷九谷、蔬菜与水果的源流演变,兼记玉米、白薯等海外作物传入中国的历史。' }
 ];
