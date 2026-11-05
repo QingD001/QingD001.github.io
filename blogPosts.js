@@ -30,5 +30,6 @@ var blogPosts = [
   { title: 'ABC 479', date: '2026-10-21', file: 'posts/ABC 479.html', category: 'Atcoder', summary: 'AtCoder ABC 479 题解,包含 C. Bento Packing、D. Back and Forth Distance、F. Narrow Passage 三道题的题意、思路与代码。' },
   { title: 'ABC 481', date: '2026-10-25', file: 'posts/ABC 481.html', category: 'Atcoder', summary: 'AtCoder ABC 481 题解,包含 B–G 六道题(Polyline、Bank Accounts、Autopilot、Most Brilliant Starry Sky、Evil Shortest Path、Half-Baked)的题意、思路与代码。' },
   { title: 'CSP42 VP记', date: '2026-10-27', file: 'posts/CSP42 VP记.html', category: 'CSP', summary: 'CSP42 比赛 VP 记录,包含 A-银行家舍入、B-机器人宿管指南、D-石子游戏三道题的题意、思路与代码。' },
-  { title: '农业与膳食', date: '2026-11-03', file: 'posts/农业与膳食.html', category: '历史学', summary: '孙机《中国古代物质文化》读书笔记系列,梳理中国古代农具(耒耜、犁、曲辕犁)、五谷九谷、蔬菜与水果的源流演变,兼记玉米、白薯等海外作物传入中国的历史。' }
+  { title: '农业与膳食', date: '2026-11-03', file: 'posts/农业与膳食.html', category: '历史学', summary: '孙机《中国古代物质文化》读书笔记系列,梳理中国古代农具(耒耜、犁、曲辕犁)、五谷九谷、蔬菜与水果的源流演变,兼记玉米、白薯等海外作物传入中国的历史。' },
+  { title: 'Educational Codeforces Round 196 (Div.2)', date: '2026-11-05', file: 'posts/Educational Codeforces Round 196 (Div.2).html', category: 'Codeforces', summary: 'Educational Codeforces Round 196 (Div. 2) 参赛记录(最终排名 466/12408),包含 B–E 题(Rhythmic String、Big XOR、Black, Gray and White、Partition of a Binary String)的题意、思路与代码。' }
 ];
